@@ -2,25 +2,24 @@ import * as vscode from 'vscode';
 import { getterGen, setterGen, getterSetterGen } from './generators';
 
 export function activate(context: vscode.ExtensionContext) {
-	let createGetter = vscode.commands.registerCommand(
+	let createGetter = vscode.commands.registerTextEditorCommand(
 		'cs-get-set-gen.create-getter',
-		() => {
-			vscode.window.showInformationMessage('getter');
+		(activeEditor) => {
+			getterGen(activeEditor);
 		}
 	);
 
-	let createSetter = vscode.commands.registerCommand(
+	let createSetter = vscode.commands.registerTextEditorCommand(
 		'cs-get-set-gen.create-setter',
-		() => {
-			vscode.window.showInformationMessage('setter');
-			}
+		(activeEditor) => {
+			setterGen(activeEditor);
 		}
 	);
 
-	let createGetterAndSetter = vscode.commands.registerCommand(
+	let createGetterAndSetter = vscode.commands.registerTextEditorCommand(
 		'cs-get-set-gen.create-getter-and-setter',
-		() => {
-			vscode.window.showInformationMessage('getterSetter');
+		(activeEditor) => {
+			getterSetterGen(activeEditor);
 		}
 	);
 

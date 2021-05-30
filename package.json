@@ -16,6 +16,26 @@
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
+		"configuration": {
+			"title": "C# Getters Setters Gen",
+			"properties": {
+				"cs-get-set-gen.useLambda": {
+					"type": "boolean",
+					"default": "false",
+					"description": "Whether to use lambda arrow function syntax for getter generation"
+				},
+				"cs-get-set-gen.getPrefix": {
+					"type": "string",
+					"default": "get",
+					"description": "Prefix for get methods"
+				},
+				"cs-get-set-gen.setPrefix": {
+					"type": "string",
+					"default": "set",
+					"description": "Prefix for set methods"
+				}
+			}
+		},
 		"commands": [
 			{
 				"command": "cs-get-set-gen.create-getter",
@@ -29,7 +49,26 @@
 				"command": "cs-get-set-gen.create-getter-and-setter",
 				"title": "C# Getters Setters Gen: Create getter and setter for selection"
 			}
-		]
+		],
+		"menus": {
+			"editor/context": [
+				{
+					"when": "resourceLangId == csharp",
+					"command": "cs-get-set-gen.create-getter",
+					"group": "1_modification"
+				},
+				{
+					"when": "resourceLangId == csharp",
+					"command": "cs-get-set-gen.create-setter",
+					"group": "1_modification"
+				},
+				{
+					"when": "resourceLangId == csharp",
+					"command": "cs-get-set-gen.create-getter-and-setter",
+					"group": "1_modification"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
