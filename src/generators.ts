@@ -1,3 +1,4 @@
+import { futimesSync } from 'fs';
 import * as vscode from 'vscode';
 
 function createGetFunction(line: Line) {
@@ -9,7 +10,7 @@ function createGetFunction(line: Line) {
 	if (conf.get('useLambda')) {
 		functionStr += ` => this.${line.variableName};`;
 	} else {
-		functionStr += ` {return this.${line.variableName};}`;
+		functionStr += ` {\nreturn this.${line.variableName};\n}`;
 	}
 	return functionStr;
 }
@@ -26,7 +27,10 @@ function createSetFunction(line: Line) {
 	return functionStr;
 }
 
-export function getterGen(activeEditor: vscode.TextEditor) {
+export function getterGen(
+	activeEditor: vscode.TextEditor,
+	edit: vscode.TextEditorEdit
+) {
 	let currentLine = activeEditor.document.lineAt(
 		activeEditor.selection.active.line
 	).text;
@@ -36,9 +40,14 @@ export function getterGen(activeEditor: vscode.TextEditor) {
 	let token = getTokensFromSelection(currentLine);
 	let functionStr = createGetFunction(token);
 	vscode.window.showInformationMessage(functionStr);
+
+	insertFunction(functionStr + '\n', edit, activeEditor);
 }
 
-export function setterGen(activeEditor: vscode.TextEditor) {
+export function setterGen(
+	activeEditor: vscode.TextEditor,
+	edit: vscode.TextEditorEdit
+) {
 	let currentLine = activeEditor.document.lineAt(
 		activeEditor.selection.active.line
 	).text;
@@ -48,8 +57,14 @@ export function setterGen(activeEditor: vscode.TextEditor) {
 	let token = getTokensFromSelection(currentLine);
 	let functionStr = createSetFunction(token);
 	vscode.window.showInformationMessage(functionStr);
+
+	insertFunction(functionStr + '\n', edit, activeEditor);
 }
-export function getterSetterGen(activeEditor: vscode.TextEditor) {
+
+export function getterSetterGen(
+	activeEditor: vscode.TextEditor,
+	edit: vscode.TextEditorEdit
+) {
 	let currentLine = activeEditor.document.lineAt(
 		activeEditor.selection.active.line
 	).text;
@@ -62,13 +77,23 @@ export function getterSetterGen(activeEditor: vscode.TextEditor) {
 	vscode.window.showInformationMessage(getFunctionStr);
 	vscode.window.showInformationMessage(setFunctionStr);
 
-	insertFunction(getFunctionStr, activeEditor);
-	insertFunction(setFunctionStr, activeEditor);
+	insertFunction(getFunctionStr + '\n', edit, activeEditor);
+	insertFunction(setFunctionStr + '\n', edit, activeEditor);
 }
 
-function insertFunction(functionStr: String, activeEditor: vscode.TextEditor) {}
+function insertFunction(
+	functionStr: string,
+	activeEditorEdit: vscode.TextEditorEdit,
+	activeEditor: vscode.TextEditor
+) {
+	let activeLine = activeEditor.selection.active.line;
+
+	let position: vscode.Position = new vscode.Position(activeLine + 1, 0);
+	activeEditorEdit.insert(position, functionStr);
+}
 
 function getTokensFromSelection(line: String): Line {
+	// maybe refactor to use code snippets
 	let leftSide: string[];
 
 	if (line.includes('//')) {

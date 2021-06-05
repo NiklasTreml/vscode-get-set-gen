@@ -4,22 +4,22 @@ import { getterGen, setterGen, getterSetterGen } from './generators';
 export function activate(context: vscode.ExtensionContext) {
 	let createGetter = vscode.commands.registerTextEditorCommand(
 		'cs-get-set-gen.create-getter',
-		(activeEditor) => {
-			getterGen(activeEditor);
+		(activeEditor, edit, args) => {
+			getterGen(activeEditor, edit);
 		}
 	);
 
 	let createSetter = vscode.commands.registerTextEditorCommand(
 		'cs-get-set-gen.create-setter',
-		(activeEditor) => {
-			setterGen(activeEditor);
+		(activeEditor, edit, args) => {
+			setterGen(activeEditor, edit);
 		}
 	);
 
 	let createGetterAndSetter = vscode.commands.registerTextEditorCommand(
 		'cs-get-set-gen.create-getter-and-setter',
-		(activeEditor) => {
-			getterSetterGen(activeEditor);
+		function (activeEditor, edit, args) {
+			getterSetterGen(activeEditor, edit);
 		}
 	);
 
